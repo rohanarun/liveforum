@@ -1,6 +1,6 @@
 {
   "name": "@managed-oss/liveforum",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Consent-pinned live sessions, access grants, attributed chat, moderation receipts, and reviewed replay proposals.",
   "type": "module",
   "license": "MIT",
