@@ -1,0 +1,36 @@
+{
+  "name": "@managed-oss/liveforum",
+  "version": "0.1.0",
+  "description": "Consent-pinned live sessions, access grants, attributed chat, moderation receipts, and reviewed replay proposals.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohanarun/liveforum.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rohanarun/liveforum/issues"
+  },
+  "homepage": "https://github.com/rohanarun/liveforum#readme",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "bin": {
+    "liveforum": "src/cli.mjs",
+    "liveforum-mcp": "src/mcp.mjs"
+  },
+  "files": [
+    "src",
+    "web",
+    "product-manifest.json",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+    "Dockerfile"
+  ],
+  "scripts": {
+    "start": "node src/web-server.mjs",
+    "test": "node --test --test-concurrency=1",
+    "verify": "node scripts/verify-manifest.mjs && node --test --test-concurrency=1"
+  }
+}

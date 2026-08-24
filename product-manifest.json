@@ -1,0 +1,1441 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "productVersion": "0.1.0",
+    "backendRelease": "v0.4.2",
+    "backendCommit": "20c4a704c77cbbbff1da995e1d91b937625a8aa4",
+    "backendSourceSnapshotSha256": "d0b7b1079d4924eb7369c788a979a707d45bb63470290e6ac33ee5662d78f69f",
+    "generatedAt": "2026-08-24T00:00:00.000Z",
+    "generator": "managed-oss-cloud/scripts/generate-product-repositories.mjs"
+  },
+  "product": {
+    "slug": "liveforum",
+    "command": "liveforum",
+    "mcpPrefix": "liveforum",
+    "environmentPrefix": "LIVEFORUM",
+    "name": "LiveForum",
+    "tagline": "Consent-pinned live sessions, access grants, attributed chat, moderation receipts, and reviewed replay proposals.",
+    "repository": "https://github.com/rohanarun/liveforum",
+    "license": "MIT",
+    "accent": "#d38cff",
+    "accentDark": "#7c44a0"
+  },
+  "module": {
+    "id": "live",
+    "category": "Live sessions",
+    "description": "Coordinate grants, consent, broadcasts, chat, prompts, responses, and replay proposals without silent access or moderation.",
+    "minimumHostedPlan": "fleet",
+    "resourceClass": "accelerated",
+    "resourceRequirements": {
+      "class": "accelerated",
+      "minimumCpuMillicores": 2000,
+      "minimumMemoryMiB": 3072,
+      "includedStorageGb": 100,
+      "recommendedWorkerConcurrency": 12
+    },
+    "recordTypes": [
+      "live-session",
+      "presenter-grant",
+      "attendee-access",
+      "media-consent-receipt",
+      "broadcast-receipt",
+      "broadcast-update",
+      "live-chat-message",
+      "chat-moderation-receipt",
+      "live-prompt",
+      "live-prompt-response",
+      "ai-proposal-request",
+      "extended-business-command-receipt"
+    ],
+    "aiCapabilities": [
+      "Consent-pinned broadcast state",
+      "Attributed moderation decisions",
+      "Replay highlights remain unpublished proposals"
+    ]
+  },
+  "backend": {
+    "defaultUrl": "https://cloud.getsupers.com",
+    "workspaceEndpoint": "/api/suite/workspace",
+    "actionEndpointPattern": "/api/suite/modules/live/actions/{actionId}",
+    "authentication": "Bearer API token",
+    "databaseBoundary": "All shared database access and tenant isolation remain behind the managed-oss-cloud API."
+  },
+  "cleanRoom": {
+    "statement": "Original clean-room implementation of the live sessions software category, designed and written independently.",
+    "sourceBoundary": "Public category behavior informed requirements; implementation and product identity are original."
+  },
+  "actions": [
+    {
+      "id": "create-session",
+      "moduleId": "live",
+      "title": "Create governed live session",
+      "description": "Create a session with purpose, schedule, visibility, and an explicit recording mode.",
+      "operation": "command",
+      "recordType": "live-session",
+      "requiredFields": [
+        "key",
+        "title",
+        "purpose",
+        "startsAt",
+        "endsAt",
+        "visibility",
+        "recordingMode",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "key",
+          "title",
+          "purpose",
+          "startsAt",
+          "endsAt",
+          "visibility",
+          "recordingMode",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "description": "Stable session key."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "description": "Session title."
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Session purpose."
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC scheduled start."
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC scheduled end."
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "workspace",
+              "invited-public"
+            ],
+            "description": "Session visibility."
+          },
+          "recordingMode": {
+            "type": "string",
+            "enum": [
+              "disabled",
+              "consent-required"
+            ],
+            "description": "Recording mode."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "key": "customer-briefing",
+        "title": "Customer briefing",
+        "purpose": "Product education",
+        "startsAt": "2026-09-01T14:00:00.000Z",
+        "endsAt": "2026-09-01T15:00:00.000Z",
+        "visibility": "invited-public",
+        "recordingMode": "consent-required",
+        "idempotencyKey": "live.create-session.example-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_create_session",
+      "cliExample": "supersuite action live create-session '{\"key\":\"customer-briefing\",\"title\":\"Customer briefing\",\"purpose\":\"Product education\",\"startsAt\":\"2026-09-01T14:00:00.000Z\",\"endsAt\":\"2026-09-01T15:00:00.000Z\",\"visibility\":\"invited-public\",\"recordingMode\":\"consent-required\",\"idempotencyKey\":\"live.create-session.example-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": "none",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "tenant-record",
+      "backendMcpToolName": "live_create_session",
+      "productMcpToolName": "liveforum_create_session",
+      "productCliExample": "liveforum action create-session '{\"key\":\"customer-briefing\",\"title\":\"Customer briefing\",\"purpose\":\"Product education\",\"startsAt\":\"2026-09-01T14:00:00.000Z\",\"endsAt\":\"2026-09-01T15:00:00.000Z\",\"visibility\":\"invited-public\",\"recordingMode\":\"consent-required\",\"idempotencyKey\":\"live.create-session.example-0001\"}'"
+    },
+    {
+      "id": "issue-presenter-grant",
+      "moduleId": "live",
+      "title": "Issue approved presenter grant",
+      "description": "Issue a short-lived least-privileged presenter grant to one exact workspace admin after attributed access approval.",
+      "operation": "command",
+      "recordType": "presenter-grant",
+      "requiredFields": [
+        "sessionId",
+        "presenterRef",
+        "capabilities",
+        "expiresAt",
+        "accessDecisionReceiptId",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "presenterRef",
+          "capabilities",
+          "expiresAt",
+          "accessDecisionReceiptId",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "presenterRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Exact workspace admin user ID receiving the grant."
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "moderate",
+                "prompt",
+                "end"
+              ],
+              "description": "Capability."
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Presenter capabilities."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC grant expiry."
+          },
+          "accessDecisionReceiptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "description": "Immutable access decision receipt."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "presenterRef": "workspace-user-0001",
+        "capabilities": [
+          "broadcast",
+          "prompt",
+          "end"
+        ],
+        "expiresAt": "2026-09-01T16:00:00.000Z",
+        "accessDecisionReceiptId": "presenter-access-42",
+        "idempotencyKey": "live.issue-presenter-grant.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_issue_presenter_grant",
+      "cliExample": "supersuite action live issue-presenter-grant '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"presenterRef\":\"workspace-user-0001\",\"capabilities\":[\"broadcast\",\"prompt\",\"end\"],\"expiresAt\":\"2026-09-01T16:00:00.000Z\",\"accessDecisionReceiptId\":\"presenter-access-42\",\"idempotencyKey\":\"live.issue-presenter-grant.example-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": "access",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_issue_presenter_grant",
+      "productMcpToolName": "liveforum_issue_presenter_grant",
+      "productCliExample": "liveforum action issue-presenter-grant '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"presenterRef\":\"workspace-user-0001\",\"capabilities\":[\"broadcast\",\"prompt\",\"end\"],\"expiresAt\":\"2026-09-01T16:00:00.000Z\",\"accessDecisionReceiptId\":\"presenter-access-42\",\"idempotencyKey\":\"live.issue-presenter-grant.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "issue-attendee-access",
+      "moduleId": "live",
+      "title": "Issue approved attendee access",
+      "description": "Issue a short-lived attendee access record to one exact authenticated workspace identity after an explicit access decision.",
+      "operation": "command",
+      "recordType": "attendee-access",
+      "requiredFields": [
+        "sessionId",
+        "attendeeRef",
+        "accessKind",
+        "expiresAt",
+        "accessDecisionReceiptId",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "attendeeRef",
+          "accessKind",
+          "expiresAt",
+          "accessDecisionReceiptId",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "attendeeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Exact authenticated workspace user ID receiving access."
+          },
+          "accessKind": {
+            "type": "string",
+            "enum": [
+              "view",
+              "view-and-chat",
+              "view-chat-and-respond"
+            ],
+            "description": "Attendee capability set."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC access expiry."
+          },
+          "accessDecisionReceiptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "description": "Immutable access decision receipt."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "attendeeRef": "workspace-user-0001",
+        "accessKind": "view-chat-and-respond",
+        "expiresAt": "2026-09-01T16:00:00.000Z",
+        "accessDecisionReceiptId": "attendee-access-42",
+        "idempotencyKey": "live.issue-attendee-access.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_issue_attendee_access",
+      "cliExample": "supersuite action live issue-attendee-access '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeRef\":\"workspace-user-0001\",\"accessKind\":\"view-chat-and-respond\",\"expiresAt\":\"2026-09-01T16:00:00.000Z\",\"accessDecisionReceiptId\":\"attendee-access-42\",\"idempotencyKey\":\"live.issue-attendee-access.example-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": "access",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_issue_attendee_access",
+      "productMcpToolName": "liveforum_issue_attendee_access",
+      "productCliExample": "liveforum action issue-attendee-access '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeRef\":\"workspace-user-0001\",\"accessKind\":\"view-chat-and-respond\",\"expiresAt\":\"2026-09-01T16:00:00.000Z\",\"accessDecisionReceiptId\":\"attendee-access-42\",\"idempotencyKey\":\"live.issue-attendee-access.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "record-media-consent",
+      "moduleId": "live",
+      "title": "Record participant media consent",
+      "description": "Record only the authenticated participant's exact granted, declined, or revoked scopes from an immutable subject interaction receipt.",
+      "operation": "command",
+      "recordType": "media-consent-receipt",
+      "requiredFields": [
+        "sessionId",
+        "participantRef",
+        "decision",
+        "scopes",
+        "policyVersion",
+        "capturedAt",
+        "subjectReceiptId",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "participantRef",
+          "decision",
+          "scopes",
+          "policyVersion",
+          "capturedAt",
+          "subjectReceiptId",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "participantRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Exact authenticated workspace user ID giving this decision."
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "granted",
+              "declined",
+              "revoked"
+            ],
+            "description": "Participant decision."
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "record-audio",
+                "record-video",
+                "publish-replay"
+              ],
+              "description": "Consent scope."
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Exact media scopes."
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Exact consent policy version."
+          },
+          "capturedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Subject interaction clock."
+          },
+          "subjectReceiptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "description": "Immutable subject interaction receipt."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "participantRef": "workspace-user-0001",
+        "decision": "granted",
+        "scopes": [
+          "record-audio",
+          "publish-replay"
+        ],
+        "policyVersion": "media-v1",
+        "capturedAt": "2026-09-01T13:50:00.000Z",
+        "subjectReceiptId": "media-consent-42",
+        "idempotencyKey": "live.record-media-consent.example-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_record_media_consent",
+      "cliExample": "supersuite action live record-media-consent '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"participantRef\":\"workspace-user-0001\",\"decision\":\"granted\",\"scopes\":[\"record-audio\",\"publish-replay\"],\"policyVersion\":\"media-v1\",\"capturedAt\":\"2026-09-01T13:50:00.000Z\",\"subjectReceiptId\":\"media-consent-42\",\"idempotencyKey\":\"live.record-media-consent.example-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": "consent",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "tenant-record",
+      "backendMcpToolName": "live_record_media_consent",
+      "productMcpToolName": "liveforum_record_media_consent",
+      "productCliExample": "liveforum action record-media-consent '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"participantRef\":\"workspace-user-0001\",\"decision\":\"granted\",\"scopes\":[\"record-audio\",\"publish-replay\"],\"policyVersion\":\"media-v1\",\"capturedAt\":\"2026-09-01T13:50:00.000Z\",\"subjectReceiptId\":\"media-consent-42\",\"idempotencyKey\":\"live.record-media-consent.example-0001\"}'"
+    },
+    {
+      "id": "start-broadcast",
+      "moduleId": "live",
+      "title": "Start approved broadcast",
+      "description": "Start a session only with a valid presenter grant and exact consent-ledger snapshot hash.",
+      "operation": "command",
+      "recordType": "broadcast-receipt",
+      "requiredFields": [
+        "sessionId",
+        "expectedVersion",
+        "presenterGrantId",
+        "startedAt",
+        "consentSnapshotHash",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "expectedVersion",
+          "presenterGrantId",
+          "startedAt",
+          "consentSnapshotHash",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Current session version."
+          },
+          "presenterGrantId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Presenter grant ID."
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC broadcast start."
+          },
+          "consentSnapshotHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Hash of the exact current session consent receipt set."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "expectedVersion": 1,
+        "presenterGrantId": "00000000-0000-4000-8000-000000000101",
+        "startedAt": "2026-09-01T14:00:00.000Z",
+        "consentSnapshotHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "idempotencyKey": "live.start-broadcast.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_start_broadcast",
+      "cliExample": "supersuite action live start-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":1,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"startedAt\":\"2026-09-01T14:00:00.000Z\",\"consentSnapshotHash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"idempotencyKey\":\"live.start-broadcast.example-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": "broadcast",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_start_broadcast",
+      "productMcpToolName": "liveforum_start_broadcast",
+      "productCliExample": "liveforum action start-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":1,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"startedAt\":\"2026-09-01T14:00:00.000Z\",\"consentSnapshotHash\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"idempotencyKey\":\"live.start-broadcast.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "update-broadcast",
+      "moduleId": "live",
+      "title": "Update approved broadcast state",
+      "description": "Apply a bounded stage-mode or agenda update through a valid presenter grant and optimistic lock.",
+      "operation": "command",
+      "recordType": "broadcast-update",
+      "requiredFields": [
+        "sessionId",
+        "expectedVersion",
+        "presenterGrantId",
+        "stageMode",
+        "agendaNote",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "expectedVersion",
+          "presenterGrantId",
+          "stageMode",
+          "agendaNote",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Current session version."
+          },
+          "presenterGrantId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Presenter grant ID."
+          },
+          "stageMode": {
+            "type": "string",
+            "enum": [
+              "speaker",
+              "panel",
+              "presentation",
+              "break"
+            ],
+            "description": "Stage layout mode."
+          },
+          "agendaNote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Human-authored agenda note."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "expectedVersion": 2,
+        "presenterGrantId": "00000000-0000-4000-8000-000000000101",
+        "stageMode": "panel",
+        "agendaNote": "Open customer questions",
+        "idempotencyKey": "live.update-broadcast.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_update_broadcast",
+      "cliExample": "supersuite action live update-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":2,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"stageMode\":\"panel\",\"agendaNote\":\"Open customer questions\",\"idempotencyKey\":\"live.update-broadcast.example-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": "broadcast",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_update_broadcast",
+      "productMcpToolName": "liveforum_update_broadcast",
+      "productCliExample": "liveforum action update-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":2,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"stageMode\":\"panel\",\"agendaNote\":\"Open customer questions\",\"idempotencyKey\":\"live.update-broadcast.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "send-chat",
+      "moduleId": "live",
+      "title": "Send attributed live chat",
+      "description": "Append a message only after validating an active access receipt with chat capability.",
+      "operation": "command",
+      "recordType": "live-chat-message",
+      "requiredFields": [
+        "sessionId",
+        "attendeeAccessId",
+        "body",
+        "sentAt",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "attendeeAccessId",
+          "body",
+          "sentAt",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "attendeeAccessId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Attendee access ID."
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "description": "Chat body."
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Client submission clock."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "attendeeAccessId": "00000000-0000-4000-8000-000000000101",
+        "body": "Could you clarify the launch date?",
+        "sentAt": "2026-09-01T14:15:00.000Z",
+        "idempotencyKey": "live.send-chat.example-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_send_chat",
+      "cliExample": "supersuite action live send-chat '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeAccessId\":\"00000000-0000-4000-8000-000000000101\",\"body\":\"Could you clarify the launch date?\",\"sentAt\":\"2026-09-01T14:15:00.000Z\",\"idempotencyKey\":\"live.send-chat.example-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": "none",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "tenant-record",
+      "backendMcpToolName": "live_send_chat",
+      "productMcpToolName": "liveforum_send_chat",
+      "productCliExample": "liveforum action send-chat '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeAccessId\":\"00000000-0000-4000-8000-000000000101\",\"body\":\"Could you clarify the launch date?\",\"sentAt\":\"2026-09-01T14:15:00.000Z\",\"idempotencyKey\":\"live.send-chat.example-0001\"}'"
+    },
+    {
+      "id": "moderate-chat",
+      "moduleId": "live",
+      "title": "Record human chat moderation",
+      "description": "Hide or restore one message only after an attributed human moderation decision and valid moderator grant.",
+      "operation": "command",
+      "recordType": "chat-moderation-receipt",
+      "requiredFields": [
+        "messageId",
+        "expectedVersion",
+        "moderatorGrantId",
+        "decision",
+        "reason",
+        "moderationReceiptId",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "messageId",
+          "expectedVersion",
+          "moderatorGrantId",
+          "decision",
+          "reason",
+          "moderationReceiptId",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Chat message ID."
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Current message version."
+          },
+          "moderatorGrantId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Presenter grant with moderation capability."
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "hide",
+              "restore"
+            ],
+            "description": "Human moderation decision."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Decision reason grounded in policy."
+          },
+          "moderationReceiptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "description": "Immutable moderation UI receipt."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "messageId": "00000000-0000-4000-8000-000000000100",
+        "expectedVersion": 1,
+        "moderatorGrantId": "00000000-0000-4000-8000-000000000101",
+        "decision": "hide",
+        "reason": "Contains a credential",
+        "moderationReceiptId": "moderation-42",
+        "idempotencyKey": "live.moderate-chat.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_moderate_chat",
+      "cliExample": "supersuite action live moderate-chat '{\"messageId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":1,\"moderatorGrantId\":\"00000000-0000-4000-8000-000000000101\",\"decision\":\"hide\",\"reason\":\"Contains a credential\",\"moderationReceiptId\":\"moderation-42\",\"idempotencyKey\":\"live.moderate-chat.example-0001\",\"dryRun\":true}'",
+      "risk": "critical",
+      "destructive": true,
+      "externalEffect": "moderation",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_moderate_chat",
+      "productMcpToolName": "liveforum_moderate_chat",
+      "productCliExample": "liveforum action moderate-chat '{\"messageId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":1,\"moderatorGrantId\":\"00000000-0000-4000-8000-000000000101\",\"decision\":\"hide\",\"reason\":\"Contains a credential\",\"moderationReceiptId\":\"moderation-42\",\"idempotencyKey\":\"live.moderate-chat.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "open-prompt",
+      "moduleId": "live",
+      "title": "Open presenter prompt",
+      "description": "Open a bounded poll or question after validating a presenter grant with prompt capability.",
+      "operation": "command",
+      "recordType": "live-prompt",
+      "requiredFields": [
+        "sessionId",
+        "presenterGrantId",
+        "question",
+        "responseType",
+        "closesAt",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "presenterGrantId",
+          "question",
+          "responseType",
+          "closesAt",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "presenterGrantId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Presenter grant ID."
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Prompt question."
+          },
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "single-choice",
+              "rating"
+            ],
+            "description": "Response type."
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "description": "Value."
+            },
+            "minItems": 0,
+            "maxItems": 50,
+            "description": "Options for a single-choice prompt."
+          },
+          "closesAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC prompt close."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "presenterGrantId": "00000000-0000-4000-8000-000000000101",
+        "question": "Which topic should we cover next?",
+        "responseType": "single-choice",
+        "options": [
+          "Security",
+          "Billing"
+        ],
+        "closesAt": "2026-09-01T14:30:00.000Z",
+        "idempotencyKey": "live.open-prompt.example-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_open_prompt",
+      "cliExample": "supersuite action live open-prompt '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"question\":\"Which topic should we cover next?\",\"responseType\":\"single-choice\",\"options\":[\"Security\",\"Billing\"],\"closesAt\":\"2026-09-01T14:30:00.000Z\",\"idempotencyKey\":\"live.open-prompt.example-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": "none",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "tenant-record",
+      "backendMcpToolName": "live_open_prompt",
+      "productMcpToolName": "liveforum_open_prompt",
+      "productCliExample": "liveforum action open-prompt '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"question\":\"Which topic should we cover next?\",\"responseType\":\"single-choice\",\"options\":[\"Security\",\"Billing\"],\"closesAt\":\"2026-09-01T14:30:00.000Z\",\"idempotencyKey\":\"live.open-prompt.example-0001\"}'"
+    },
+    {
+      "id": "submit-response",
+      "moduleId": "live",
+      "title": "Submit attributed prompt response",
+      "description": "Append one response after validating the attendee access receipt and prompt close clock.",
+      "operation": "command",
+      "recordType": "live-prompt-response",
+      "requiredFields": [
+        "promptId",
+        "attendeeAccessId",
+        "response",
+        "submittedAt",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "promptId",
+          "attendeeAccessId",
+          "response",
+          "submittedAt",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "promptId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live prompt ID."
+          },
+          "attendeeAccessId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Attendee access ID."
+          },
+          "response": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000,
+            "description": "Response value."
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC submission clock."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "promptId": "00000000-0000-4000-8000-000000000100",
+        "attendeeAccessId": "00000000-0000-4000-8000-000000000101",
+        "response": "Security",
+        "submittedAt": "2026-09-01T14:20:00.000Z",
+        "idempotencyKey": "live.submit-response.example-0001"
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_submit_response",
+      "cliExample": "supersuite action live submit-response '{\"promptId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeAccessId\":\"00000000-0000-4000-8000-000000000101\",\"response\":\"Security\",\"submittedAt\":\"2026-09-01T14:20:00.000Z\",\"idempotencyKey\":\"live.submit-response.example-0001\"}'",
+      "risk": "low",
+      "destructive": false,
+      "externalEffect": "none",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "tenant-record",
+      "backendMcpToolName": "live_submit_response",
+      "productMcpToolName": "liveforum_submit_response",
+      "productCliExample": "liveforum action submit-response '{\"promptId\":\"00000000-0000-4000-8000-000000000100\",\"attendeeAccessId\":\"00000000-0000-4000-8000-000000000101\",\"response\":\"Security\",\"submittedAt\":\"2026-09-01T14:20:00.000Z\",\"idempotencyKey\":\"live.submit-response.example-0001\"}'"
+    },
+    {
+      "id": "end-broadcast",
+      "moduleId": "live",
+      "title": "End approved broadcast",
+      "description": "End a live session through a valid presenter grant and persist the exact end receipt.",
+      "operation": "command",
+      "recordType": "broadcast-receipt",
+      "requiredFields": [
+        "sessionId",
+        "expectedVersion",
+        "presenterGrantId",
+        "endedAt",
+        "idempotencyKey",
+        "dryRun"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "expectedVersion",
+          "presenterGrantId",
+          "endedAt",
+          "idempotencyKey",
+          "dryRun"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Current session version."
+          },
+          "presenterGrantId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Presenter grant ID."
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC broadcast end."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Validate and preview the exact effect without changing domain state."
+          },
+          "approval": {
+            "type": "object",
+            "description": "Attributed human approval of the exact requested effect.",
+            "required": [
+              "approved",
+              "approvedBy",
+              "approvedAt",
+              "decisionId",
+              "reason"
+            ],
+            "properties": {
+              "approved": {
+                "const": true
+              },
+              "approvedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "description": "Approving workspace identity."
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Approval clock."
+              },
+              "decisionId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "description": "Reason grounded in reviewed evidence."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "expectedVersion": 3,
+        "presenterGrantId": "00000000-0000-4000-8000-000000000101",
+        "endedAt": "2026-09-01T15:00:00.000Z",
+        "idempotencyKey": "live.end-broadcast.example-0001",
+        "dryRun": true
+      },
+      "requiredScope": "write",
+      "mcpToolName": "live_end_broadcast",
+      "cliExample": "supersuite action live end-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":3,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"endedAt\":\"2026-09-01T15:00:00.000Z\",\"idempotencyKey\":\"live.end-broadcast.example-0001\",\"dryRun\":true}'",
+      "risk": "high",
+      "destructive": false,
+      "externalEffect": "broadcast",
+      "idempotent": true,
+      "requiresApproval": true,
+      "supportsDryRun": true,
+      "minimumRole": "admin",
+      "effectBoundary": "approved-ledger-command",
+      "backendMcpToolName": "live_end_broadcast",
+      "productMcpToolName": "liveforum_end_broadcast",
+      "productCliExample": "liveforum action end-broadcast '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"expectedVersion\":3,\"presenterGrantId\":\"00000000-0000-4000-8000-000000000101\",\"endedAt\":\"2026-09-01T15:00:00.000Z\",\"idempotencyKey\":\"live.end-broadcast.example-0001\",\"dryRun\":true}'"
+    },
+    {
+      "id": "build-replay",
+      "moduleId": "live",
+      "title": "Queue replay highlight proposal",
+      "description": "Queue cited chapters and highlight suggestions; it cannot edit media, publish a replay, or override consent.",
+      "operation": "ai",
+      "recordType": "ai-proposal-request",
+      "requiredFields": [
+        "sessionId",
+        "goal",
+        "evidenceIds",
+        "idempotencyKey"
+      ],
+      "engine": "extended",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "goal",
+          "evidenceIds",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Live session ID."
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Replay objective."
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Evidence record ID."
+            },
+            "minItems": 1,
+            "maxItems": 500,
+            "description": "Tenant-owned record IDs selected as evidence."
+          },
+          "modelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Optional expected workspace-configured model identifier. When omitted, the trusted workspace policy is used; never a credential."
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{16,200}$",
+            "description": "A retry-safe key unique to this logical mutation."
+          }
+        },
+        "additionalProperties": false
+      },
+      "exampleInput": {
+        "sessionId": "00000000-0000-4000-8000-000000000100",
+        "goal": "Propose consent-compatible chapters and factual highlights.",
+        "evidenceIds": [
+          "00000000-0000-4000-8000-000000000101"
+        ],
+        "idempotencyKey": "live.build-replay.example-0001"
+      },
+      "requiredScope": "ai",
+      "mcpToolName": "live_build_replay",
+      "cliExample": "supersuite action live build-replay '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"goal\":\"Propose consent-compatible chapters and factual highlights.\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"live.build-replay.example-0001\"}'",
+      "risk": "medium",
+      "destructive": false,
+      "externalEffect": "model",
+      "idempotent": true,
+      "requiresApproval": false,
+      "supportsDryRun": false,
+      "minimumRole": "member",
+      "effectBoundary": "proposal-only",
+      "backendMcpToolName": "live_build_replay",
+      "productMcpToolName": "liveforum_build_replay",
+      "productCliExample": "liveforum action build-replay '{\"sessionId\":\"00000000-0000-4000-8000-000000000100\",\"goal\":\"Propose consent-compatible chapters and factual highlights.\",\"evidenceIds\":[\"00000000-0000-4000-8000-000000000101\"],\"idempotencyKey\":\"live.build-replay.example-0001\"}'"
+    }
+  ]
+}
