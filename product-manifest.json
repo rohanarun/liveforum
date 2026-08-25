@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "release": {
-    "productVersion": "0.1.1",
+    "productVersion": "0.2.0",
     "backendRelease": "v0.4.2",
     "backendCommit": "20c4a704c77cbbbff1da995e1d91b937625a8aa4",
     "backendSourceSnapshotSha256": "d0b7b1079d4924eb7369c788a979a707d45bb63470290e6ac33ee5662d78f69f",
@@ -63,6 +63,190 @@
   "cleanRoom": {
     "statement": "Original clean-room implementation of the live sessions software category, designed and written independently.",
     "sourceBoundary": "Public category behavior informed requirements; implementation and product identity are original."
+  },
+  "experience": {
+    "releaseBoundary": "Complete for every typed action declared by this product manifest; it does not claim feature parity with unrelated third-party products.",
+    "headline": "Consent-pinned live sessions",
+    "primaryActionId": "create-session",
+    "quickActionIds": [
+      "create-session",
+      "issue-presenter-grant",
+      "issue-attendee-access",
+      "record-media-consent"
+    ],
+    "navigation": [
+      "Overview",
+      "Records",
+      "Workflows",
+      "AI assistance",
+      "Settings"
+    ],
+    "workflowGroups": [
+      {
+        "name": "Create and capture",
+        "actionIds": [
+          "create-session",
+          "issue-presenter-grant",
+          "issue-attendee-access",
+          "record-media-consent",
+          "start-broadcast",
+          "moderate-chat",
+          "open-prompt",
+          "submit-response"
+        ]
+      },
+      {
+        "name": "Operate and update",
+        "actionIds": [
+          "send-chat"
+        ]
+      },
+      {
+        "name": "Review and approve",
+        "actionIds": [
+          "update-broadcast",
+          "end-broadcast"
+        ]
+      },
+      {
+        "name": "AI assistance",
+        "actionIds": [
+          "build-replay"
+        ]
+      }
+    ],
+    "metrics": [
+      {
+        "label": "Typed actions",
+        "value": 12
+      },
+      {
+        "label": "Record types",
+        "value": 12
+      },
+      {
+        "label": "AI workflows",
+        "value": 1
+      },
+      {
+        "label": "Review gates",
+        "value": 2
+      }
+    ],
+    "sampleRecords": [
+      {
+        "id": "demo-live-01",
+        "moduleId": "live",
+        "recordType": "live-session",
+        "title": "Live Session Launch",
+        "state": "active",
+        "createdAt": "2026-08-18T13:30:00.000Z",
+        "updatedAt": "2026-08-25T13:15:00.000Z",
+        "data": {
+          "owner": "Operations",
+          "evidenceStatus": "verified",
+          "nextStep": "Create governed live session"
+        }
+      },
+      {
+        "id": "demo-live-02",
+        "moduleId": "live",
+        "recordType": "presenter-grant",
+        "title": "Presenter Grant Operations",
+        "state": "in review",
+        "createdAt": "2026-08-19T13:30:00.000Z",
+        "updatedAt": "2026-08-25T12:15:00.000Z",
+        "data": {
+          "owner": "Product",
+          "evidenceStatus": "current",
+          "nextStep": "Issue approved presenter grant"
+        }
+      },
+      {
+        "id": "demo-live-03",
+        "moduleId": "live",
+        "recordType": "attendee-access",
+        "title": "Attendee Access Evidence",
+        "state": "ready",
+        "createdAt": "2026-08-20T13:30:00.000Z",
+        "updatedAt": "2026-08-25T11:15:00.000Z",
+        "data": {
+          "owner": "Operations",
+          "evidenceStatus": "current",
+          "nextStep": "Issue approved attendee access"
+        }
+      },
+      {
+        "id": "demo-live-04",
+        "moduleId": "live",
+        "recordType": "media-consent-receipt",
+        "title": "Media Consent Receipt Review",
+        "state": "scheduled",
+        "createdAt": "2026-08-21T13:30:00.000Z",
+        "updatedAt": "2026-08-25T10:15:00.000Z",
+        "data": {
+          "owner": "Product",
+          "evidenceStatus": "verified",
+          "nextStep": "Record participant media consent"
+        }
+      },
+      {
+        "id": "demo-live-05",
+        "moduleId": "live",
+        "recordType": "broadcast-receipt",
+        "title": "Broadcast Receipt Pilot",
+        "state": "draft",
+        "createdAt": "2026-08-22T13:30:00.000Z",
+        "updatedAt": "2026-08-25T09:15:00.000Z",
+        "data": {
+          "owner": "Operations",
+          "evidenceStatus": "current",
+          "nextStep": "Start approved broadcast"
+        }
+      },
+      {
+        "id": "demo-live-06",
+        "moduleId": "live",
+        "recordType": "broadcast-update",
+        "title": "Broadcast Update Archive",
+        "state": "complete",
+        "createdAt": "2026-08-23T13:30:00.000Z",
+        "updatedAt": "2026-08-25T08:15:00.000Z",
+        "data": {
+          "owner": "Product",
+          "evidenceStatus": "current",
+          "nextStep": "Update approved broadcast state"
+        }
+      },
+      {
+        "id": "demo-live-07",
+        "moduleId": "live",
+        "recordType": "live-chat-message",
+        "title": "Live Chat Message Launch",
+        "state": "active",
+        "createdAt": "2026-08-24T13:30:00.000Z",
+        "updatedAt": "2026-08-25T07:15:00.000Z",
+        "data": {
+          "owner": "Operations",
+          "evidenceStatus": "verified",
+          "nextStep": "Send attributed live chat"
+        }
+      },
+      {
+        "id": "demo-live-08",
+        "moduleId": "live",
+        "recordType": "chat-moderation-receipt",
+        "title": "Chat Moderation Receipt Operations",
+        "state": "in review",
+        "createdAt": "2026-08-25T13:30:00.000Z",
+        "updatedAt": "2026-08-25T06:15:00.000Z",
+        "data": {
+          "owner": "Product",
+          "evidenceStatus": "current",
+          "nextStep": "Record human chat moderation"
+        }
+      }
+    ]
   },
   "actions": [
     {
