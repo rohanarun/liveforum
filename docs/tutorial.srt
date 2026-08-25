@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:02,250
+Open the LiveForum workspace and review available live session operations.
+
+2
+00:00:02,250 --> 00:00:05,375
+Connect the browser to the backend workspace environment.
+
+3
+00:00:05,375 --> 00:00:08,000
+Open the session creation form and set parameters including title, purpose, and schedule.
+
+4
+00:00:08,000 --> 00:00:10,375
+Submit the workflow to create the live session record.
+
+5
+00:00:10,375 --> 00:00:17,000
+Search records and inspect the newly created scheduled live session details.

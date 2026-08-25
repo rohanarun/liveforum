@@ -1,0 +1,169 @@
+{
+  "schema": "managed-oss-functional-tutorial.v1",
+  "product": {
+    "slug": "liveforum",
+    "name": "LiveForum",
+    "moduleId": "live",
+    "version": "0.3.1",
+    "manifestSha256": "c11b9c5ad8e2c9c2b2166c967b96ddc082c51d29f288bfd45a21bd835bf79fd3"
+  },
+  "backend": {
+    "release": "v0.4.4",
+    "commit": "148abce99b91d8b9fdc8aa41c3f0eba283796db4"
+  },
+  "testedAt": "2026-08-25T21:57:41.345Z",
+  "browser": {
+    "engine": "Chromium",
+    "version": "151.0.7922.174",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "functionalProof": {
+    "action": {
+      "id": "create-session",
+      "title": "Create governed live session",
+      "httpStatus": 200
+    },
+    "record": {
+      "id": "3a34bcb3-08dc-472f-96ab-905480d96179",
+      "recordType": "live-session",
+      "title": "LiveForum functional tutorial",
+      "state": "scheduled"
+    },
+    "detail": {
+      "httpStatus": 200,
+      "matched": true
+    },
+    "assertions": [
+      "browser-authenticated-real-backend",
+      "guided-form-submitted",
+      "action-http-200",
+      "durable-record-returned",
+      "record-detail-http-200",
+      "exact-record-reopened-in-ui"
+    ]
+  },
+  "timeline": [
+    {
+      "stepId": "overview",
+      "observedLabel": "Meet LiveForum",
+      "observedFact": "Open the real LiveForum workspace and identify its core workflow.",
+      "startMs": 0,
+      "endMs": 2250
+    },
+    {
+      "stepId": "connect",
+      "observedLabel": "Connect the workspace",
+      "observedFact": "Authenticate this browser to the isolated shared backend and load durable records.",
+      "startMs": 2250,
+      "endMs": 5375
+    },
+    {
+      "stepId": "configure",
+      "observedLabel": "Create governed live session",
+      "observedFact": "Complete the guided, contract-validated form for the product's primary workflow.",
+      "startMs": 5375,
+      "endMs": 8000
+    },
+    {
+      "stepId": "execute",
+      "observedLabel": "Run the real workflow",
+      "observedFact": "Submit the action to the shared backend and require a successful durable result.",
+      "startMs": 8000,
+      "endMs": 10375
+    },
+    {
+      "stepId": "inspect",
+      "observedLabel": "Inspect the saved record",
+      "observedFact": "Search the product record view and reopen the exact record returned by the workflow.",
+      "startMs": 10375,
+      "endMs": 17000
+    }
+  ],
+  "explanation": {
+    "title": "Creating a Governed Live Session in LiveForum",
+    "summary": "Learn how to connect your workspace, configure and execute a governed live session creation workflow, and inspect the resulting durable record in LiveForum.",
+    "cues": [
+      {
+        "stepId": "overview",
+        "startMs": 0,
+        "endMs": 2250,
+        "label": "Meet LiveForum",
+        "subtitle": "Open the LiveForum workspace and review available live session operations."
+      },
+      {
+        "stepId": "connect",
+        "startMs": 2250,
+        "endMs": 5375,
+        "label": "Connect the workspace",
+        "subtitle": "Connect the browser to the backend workspace environment."
+      },
+      {
+        "stepId": "configure",
+        "startMs": 5375,
+        "endMs": 8000,
+        "label": "Create governed live session",
+        "subtitle": "Open the session creation form and set parameters including title, purpose, and schedule."
+      },
+      {
+        "stepId": "execute",
+        "startMs": 8000,
+        "endMs": 10375,
+        "label": "Run the real workflow",
+        "subtitle": "Submit the workflow to create the live session record."
+      },
+      {
+        "stepId": "inspect",
+        "startMs": 10375,
+        "endMs": 17000,
+        "label": "Inspect the saved record",
+        "subtitle": "Search records and inspect the newly created scheduled live session details."
+      }
+    ],
+    "generation": {
+      "provider": "OpenRouter",
+      "model": "google/gemini-3.7-flash",
+      "requestedModel": "google/gemini-3.7-flash",
+      "responseModel": "google/gemini-3.7-flash",
+      "responseId": "gen-1787695056-AiuBaxBiertsEBpWDYPL",
+      "responseCreatedAt": "2026-08-25T21:57:36.000Z",
+      "input": {
+        "rawVideoSha256": "abde32aedeb2441a073a2a75c299dfdf4a6e2cdae2396e5ba042541ef88a1b83",
+        "workflowFactsSha256": "5da4b721f69a8bc8adcd26f26646f202dc9fe12735228926a420e739f61d04b7"
+      },
+      "usage": {
+        "promptTokens": 1561,
+        "completionTokens": 584,
+        "totalTokens": 2145
+      }
+    }
+  },
+  "video": {
+    "raw": {
+      "sha256": "abde32aedeb2441a073a2a75c299dfdf4a6e2cdae2396e5ba042541ef88a1b83",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 17,
+      "sizeBytes": 439127
+    },
+    "final": {
+      "file": "docs/tutorial.mp4",
+      "sha256": "b37e22440f6d487cc87c7b4ce8e60e0ebe8bc0d0b1d84e6765de7cf702c7e807",
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 17,
+      "sizeBytes": 439676
+    },
+    "subtitles": {
+      "file": "docs/tutorial.srt",
+      "sha256": "75dde4def03f118966f59e8da5259ec2490378bdb68cb1f933c3bb9dce45f50e",
+      "format": "SubRip"
+    },
+    "overlaysBurnedIn": true,
+    "silent": true
+  }
+}
